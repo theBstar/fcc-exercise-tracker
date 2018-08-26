@@ -39,20 +39,23 @@ app.post("/api/exercise/add", function(req, res){
           user.id, 
           {
             $set:{
+              username: "updated username",
               exercise: [{
-                despcription: req.body.description, 
+                description: req.body.description, 
                 duration: req.body.duration, 
                 date: req.body.date
               }]
             }
           },(err, updatedUser)=>{
-            console.log("this is the updated user "+ updatedUser)
-            res.json({
-              userId: updatedUser.id,
-              description: updatedUser.description,
-              duration: updatedUser.duration,
-              date: updatedUser.date
-            })
+            if(!err) {
+              console.log("this is the updated user "+ updatedUser)
+              res.json({
+                userId: updatedUser.id,
+                description: updatedUser.exersice.description,
+                duration: updatedUser.exersice.duration,
+                date: updatedUser.exersice.date
+              })
+            }
           })
       }else{
         res.send("<h1>Error has occurred</h1>")
