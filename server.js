@@ -17,6 +17,67 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+const userSchema = mongoose.Schema({
+  username: String,
+  exercise: [
+    {
+      description: String,
+      duration: Number,
+      date: Date
+    }
+  ]
+});
+const UserModel = mongoose.model("userRecord", userSchema)
+
+app.post("/api/exercise/add", function(req, res){
+  if(req.body.userId){
+    console.log("userId is not null");
+    UserModel.findById(req.body.userId, function(err, user){
+      if(!err){
+        console.log("userId found in the database "+user)
+        UserModel.findByIdAndUpdate(
+          user.id, 
+          {
+            $set:{
+              exercise: [{
+                despcription: req.body.description, 
+                duration: req.body.duration, 
+                date: req.body.date
+              }]
+            }
+          },(err, updatedUser)=>{
+            console.log("this is the updated user "+ updatedUser)
+            res.json({
+              userId: updatedUser.id,
+              description: updatedUser.description,
+              duration: updatedUser.duration,
+              date: updatedUser.date
+            })
+          })
+      }else{
+        res.send("<h1>Error has occurred</h1>")
+      }
+    })
+  }
+})
+app.post("/api/exercise/new-user", function(req, res){
+  if(req.body.username){
+    UserModel.findOne({username: req.body.username}, (err, data)=>{
+      if(!data){
+        UserModel.create({username: req.body.username}, (err, data)=>{
+          if(data){
+            res.json({username: data.username, userId: data.userId})
+          }
+        })
+      }else{
+        res.json({username: data.username, userId: data.id})
+      }
+    })
+  }else{
+    res.send("error! try again with non-empty username")
+  }
+})
+
 
 // Not found middleware
 app.use((req, res, next) => {
@@ -42,59 +103,6 @@ app.use((err, req, res, next) => {
     .send(errMessage)
 })
 
-const userSchema = mongoose.Schema({
-  username: String,
-  exercise: [
-    {
-      description: String,
-      duration: Number,
-      date: Date
-    }
-  ]
-});
-const UserModel = mongoose.model("userRecord", userSchema)
-
-app.post("/api/exercise/add", function(req, res){
-  if(req.body.userId){
-    UserModel.findById(req.body.userId, function(err, user){
-      if(!err){
-        UserModel.findByIdAndUpdate(
-          user.id, 
-          {$set:{
-            despcription: req.body.description, 
-            duration: req.body.duration, 
-            date: req.body.date
-            }
-          },(err, updatedUser)=>{
-            res.send({
-              userId: updatedUser.id,
-              description: updatedUser.description,
-              duration: updatedUser.duration,
-              date: updatedUser.date
-            })
-          })
-      }else{
-        res.send("<h1>Error has occurred</h1>")
-      }
-    })
-  }
-})
-app.post("/api/exercise/new-user", function(req, res){
-  let result = {};
-  if(req.body.username){
-    UserModel.findOne({username: req.body.username}, (err, data)=>{
-      if(!data){
-        UserModel.create({username: req.body.username}, (err, data)=>{
-          if(data){
-            result = Object.assign({username: data.username, userId: data.userId})
-          }
-        })
-      }else{
-        result = Object.assign({username: data.username, userId: data.id})
-      }
-    })
-  }
-})
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
