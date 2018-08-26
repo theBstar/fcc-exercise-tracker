@@ -44,12 +44,28 @@ app.use((err, req, res, next) => {
 
 const userSchema = mongoose.Schema({
   username: String,
-  userId: {type: Number, unique: true}
+  exercise: [
+    {
+      description: String,
+      duration: Number,
+      date: Date
+    }
+  ]
 });
-const exerciseSchema = mongoose.Schema({
-  
-})
+const UserModel = mongoose.model("userRecord", userSchema)
 
+app.post("/api/exercise/add", function(req, res){
+  if(req.body.userId){
+    UserModel.findById(req.body.userId, function(err, user){
+      if(!err){
+        
+      }
+    })
+    const newRecord = new UserModel ({
+      
+    })
+  }
+})
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
