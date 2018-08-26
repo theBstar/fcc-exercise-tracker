@@ -39,7 +39,6 @@ app.post("/api/exercise/add", function(req, res){
           user.id, 
           {
             $set:{
-              username: "updated username",
               exercise: [{
                 description: req.body.description, 
                 duration: req.body.duration, 
@@ -55,6 +54,8 @@ app.post("/api/exercise/add", function(req, res){
                 duration: updatedUser.exersice.duration,
                 date: updatedUser.exersice.date
               })
+            }else{
+              res.send("<b>error!</b>")
             }
           })
       }else{
