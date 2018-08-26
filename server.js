@@ -58,11 +58,40 @@ app.post("/api/exercise/add", function(req, res){
   if(req.body.userId){
     UserModel.findById(req.body.userId, function(err, user){
       if(!err){
-        
+        UserModel.findByIdAndUpdate(
+          user.id, 
+          {$set:{
+            despcription: req.body.description, 
+            duration: req.body.duration, 
+            date: req.body.date
+            }
+          },(err, updatedUser)=>{
+            res.send({
+              userId: updatedUser.id,
+              description: updatedUser.description,
+              duration: updatedUser.duration,
+              date: updatedUser.date
+            })
+          })
+      }else{
+        res.send("<h1>Error has occurred</h1>")
       }
     })
-    const newRecord = new UserModel ({
-      
+  }
+})
+app.post("/api/exercise/new-user", function(req, res){
+  let result = {};
+  if(req.body.username){
+    UserModel.findOne({username: req.body.username}, (err, data)=>{
+      if(!data){
+        UserModel.create({username: req.body.username}, (err, data)=>{
+          if(data){
+            result = Object.assign({username: data.username, userId: data.userId})
+          }
+        })
+      }else{
+        result = Object.assign({username: data.username, userId: data.id})
+      }
     })
   }
 })
