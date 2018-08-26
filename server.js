@@ -42,7 +42,13 @@ app.use((err, req, res, next) => {
     .send(errMessage)
 })
 
-const 
+const userSchema = mongoose.schema({
+  username: String,
+  userId: {type: Number, unique: true}
+});
+const exerciseSchema = mongoose.schema({
+  
+})
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
