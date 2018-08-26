@@ -42,11 +42,11 @@ app.use((err, req, res, next) => {
     .send(errMessage)
 })
 
-const userSchema = mongoose.schema({
+const userSchema = mongoose.Schema({
   username: String,
   userId: {type: Number, unique: true}
 });
-const exerciseSchema = mongoose.schema({
+const exerciseSchema = mongoose.Schema({
   
 })
 
