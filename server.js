@@ -23,7 +23,7 @@ const exerciseSchema = mongoose.Schema({
   date: Date
 })
 
-const userSchema = mongoose.Schema({
+const newUserSchema = mongoose.Schema({
   username: String,
   exercise: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -31,8 +31,8 @@ const userSchema = mongoose.Schema({
   }]
 });
 
-const Exercise = mongoose.model("exercise", exerciseSchema)
-const UserModel = mongoose.model("userRecord", userSchema);
+const newExercise = mongoose.model("exercise", exerciseSchema)
+const newUserModel = mongoose.model("newUserRecord", newUserSchema);
 
 
 app.post("/api/exercise/add", function(req, res){
@@ -43,12 +43,10 @@ app.post("/api/exercise/add", function(req, res){
               };
   if(req.body.userId){
     console.log("userId is not null");
-    UserModel.findById(req.body.userId, function(err, user){
+    newUserModel.findById(req.body.userId, function(err, user){
       if(!err){
-        console.log("userId found in the database "+user)
-        console.log("variable inside cb "+exercise)
-        user.exercise.push(exercise)
-        user.save((err, updatedUser)=>{
+        const toBeSavedExercise = new newExercise(exercise)
+        toBeSavedExercise.save((err, updatedUser)=>{
             if(!err) {
               console.log("this is the updated user "+ updatedUser)
               res.json({
@@ -66,9 +64,9 @@ app.post("/api/exercise/add", function(req, res){
 })
 app.post("/api/exercise/new-user", function(req, res){
   if(req.body.username){
-    UserModel.findOne({username: req.body.username}, (err, data)=>{
+    newUserModel.findOne({username: req.body.username}, (err, data)=>{
       if(!data){
-        UserModel.create({username: req.body.username}, (err, data)=>{
+        newUserModel.create({username: req.body.username}, (err, data)=>{
           if(data){
             res.json({username: data.username, userId: data.id})
           }
