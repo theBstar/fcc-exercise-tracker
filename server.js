@@ -48,9 +48,13 @@ app.post("/api/exercise/add", function(req, res){
         const toBeSavedExercise = new newExercise(exercise)
         toBeSavedExercise.save((err, savedExercise)=>{
             if(!err) {
+              console.log("exercise is saved "+savedExercise);
+              console.log("here the user is "+user);
               user.exercise.push(savedExercise.id);
+              console.log("Now the user is "+ user);
               user.save((err, updatedUser)=>{
                   if(!err){
+                    console.log("everyhting done")
                     res.json(updatedUser);
                   }else{
                     res.send("<b>error!</b>");
