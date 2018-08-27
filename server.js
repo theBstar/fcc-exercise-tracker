@@ -46,11 +46,15 @@ app.post("/api/exercise/add", function(req, res){
     newUserModel.findById(req.body.userId, function(err, user){
       if(!err){
         const toBeSavedExercise = new newExercise(exercise)
-        toBeSavedExercise.save((err, updatedUser)=>{
+        toBeSavedExercise.save((err, savedExercise)=>{
             if(!err) {
-              console.log("this is the updated user "+ updatedUser)
-              res.json({
-                hi: "hello"
+              user.exercise.push(savedExercise.id);
+              user.save((err, updatedUser)=>{
+                  if(!err){
+                    res.json(updatedUser);
+                  }else{
+                    res.send("<b>error!</b>");
+                  }    
               })
             }else{
               res.send("<b>error!</b>")
