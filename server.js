@@ -36,6 +36,7 @@ const UserModel = mongoose.model("userRecord", userSchema);
 
 
 app.post("/api/exercise/add", function(req, res){
+  console.log(req)
   let exercise = {
                 description: req.body.description, 
                 duration: req.body.duration, 
@@ -56,10 +57,7 @@ app.post("/api/exercise/add", function(req, res){
             if(!err) {
               console.log("this is the updated user "+ updatedUser)
               res.json({
-                userId: updatedUser.id,
-                description: updatedUser.exersice.description,
-                duration: updatedUser.exersice.duration,
-                date: updatedUser.exersice.date
+                hi: "hello"
               })
             }else{
               res.send("<b>error!</b>")
@@ -77,7 +75,7 @@ app.post("/api/exercise/new-user", function(req, res){
       if(!data){
         UserModel.create({username: req.body.username}, (err, data)=>{
           if(data){
-            res.json({username: data.username, userId: data.userId})
+            res.json({username: data.username, userId: data.id})
           }
         })
       }else{
