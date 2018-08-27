@@ -50,9 +50,7 @@ app.post("/api/exercise/add", function(req, res){
             if(!err) {
               console.log("exercise is saved "+savedExercise);
               console.log("here the user is "+user);
-              user.exercise.push(savedExercise.id);
-              console.log("Now the user is "+ user);
-              user.save((err, updatedUser)=>{
+              newUserModel.findByIdAndUpdate(user.id, {$set:{exercise: savedExercise.id}},(err, updatedUser)=>{
                   if(!err){
                     console.log("everyhting done")
                     res.json(updatedUser);
