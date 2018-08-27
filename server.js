@@ -27,7 +27,7 @@ const userSchema = mongoose.Schema({
   username: String,
   exercise: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "exercise"
+    ref: "exerciseSchema"
   }]
 });
 
@@ -36,7 +36,6 @@ const UserModel = mongoose.model("userRecord", userSchema);
 
 
 app.post("/api/exercise/add", function(req, res){
-  console.log(req)
   let exercise = {
                 description: req.body.description, 
                 duration: req.body.duration, 
@@ -47,13 +46,9 @@ app.post("/api/exercise/add", function(req, res){
     UserModel.findById(req.body.userId, function(err, user){
       if(!err){
         console.log("userId found in the database "+user)
-        UserModel.findByIdAndUpdate(
-          user.id, 
-          {
-            $set:{
-              exercise: exercise
-            }
-          },(err, updatedUser)=>{
+        console.log("variable inside cb "+exercise)
+        user.exercise.push(exercise)
+        user.save((err, updatedUser)=>{
             if(!err) {
               console.log("this is the updated user "+ updatedUser)
               res.json({
