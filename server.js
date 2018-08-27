@@ -16,20 +16,31 @@ app.use(express.static('public'))
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
+// schemas
+const exerciseSchema = mongoose.Schema({
+  description: String,
+  duration: Number,
+  date: Date
+})
 
 const userSchema = mongoose.Schema({
   username: String,
-  exercise: [
-    {
-      description: String,
-      duration: Number,
-      date: Date
-    }
-  ]
+  exercise: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "exercise"
+  }]
 });
-const UserModel = mongoose.model("userRecord", userSchema)
+
+const Exercise = mongoose.model("exercise", exerciseSchema)
+const UserModel = mongoose.model("userRecord", userSchema);
+
 
 app.post("/api/exercise/add", function(req, res){
+  let exercise = {
+                description: req.body.description, 
+                duration: req.body.duration, 
+                date: req.body.date
+              };
   if(req.body.userId){
     console.log("userId is not null");
     UserModel.findById(req.body.userId, function(err, user){
@@ -39,11 +50,7 @@ app.post("/api/exercise/add", function(req, res){
           user.id, 
           {
             $set:{
-              exercise: [{
-                description: req.body.description, 
-                duration: req.body.duration, 
-                date: req.body.date
-              }]
+              exercise: exercise
             }
           },(err, updatedUser)=>{
             if(!err) {
