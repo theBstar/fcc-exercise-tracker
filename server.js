@@ -30,16 +30,20 @@ const UserModel  = mongoose.model("person", userSchema);
 
 app.post("/api/exercise/new-user", (req, res)=>{
   let result;
-  if(!req.username){
+  if(!req.userId){
     res.send("error , try again!");   
   };
-  UserModel.create({username: req.username}, (err, user)=>{
+  UserModel.create({username: req.userId}, (err, user)=>{
     if(err){
       res.send("something went wrong");
     }
     res.json({username: user.username, userId: user.id});
   })
 });
+
+app.post("/api/exercise/add", (req, res)=>{
+  
+})
 
 // Not found middleware
 app.use((req, res, next) => {
