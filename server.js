@@ -55,10 +55,14 @@ app.post("/api/exercise/add", (req, res)=>{
     UserModel.findByIdAndUpdate(req.body.userId,{$push:{exercise:exercise}}, (err, updatedUser)=>{ //this will return the old data
           if(err) res.send("<b>something went wrong</b>");                                        // to get updated array pass {new: true} to findAndUpdate
           UserModel.findById(updatedUser.id, (err, actullyUpdatedUser)=>{
-            const newU = Object.assign(actullyUpdatedUser, { exercise: actullyUpdatedUser
+            const newU = Object.assign({username: actullyUpdatedUser.username,
+                                        userId: actullyUpdatedUser.id,
+                                        exercise: actullyUpdatedUser
                                                .exercise
                                                .map((d)=>{
-                                                 return {date: (new Date(d.date)),description: d.description, duration: d.duration }
+                                                 let retVal= {date: (new Date(d.date)), description: d.description, duration: d.duration }
+                                                 console.log(retVal)
+                                                 return retVal;
                                                  })
                                                 }
                                               );
@@ -77,14 +81,13 @@ app.post("/api/exercise/add", (req, res)=>{
 app.get("/api/exercise/log", (req, res)=>{
   console.log(req.query)
   if(!req.query.userId) res.send("You must enter a userId")
-  let from = req.query.from || null
-  let to = req.query.to || null
+  let from = new Date(req.query.from).getTime || null
+  let to = newDate(req.query.to || null
   let limit  = req.query.limit || null
   if(to && from){
     if(limit){
       console.log("everything provided");
        UserModel.findById(req.query.userId).where("date").gt(from).lt(to).limit(limit).exec((err, data)=>{
-         console.log("running")
          if(err) res.send("error");
          res.json(data); 
       })
