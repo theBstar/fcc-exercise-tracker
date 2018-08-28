@@ -21,7 +21,9 @@ app.get('/', (req, res) => {
 const userSchema = mongoose.Schema({
   username: String,
   exercise: [{
-    
+    description: String,
+    duration: Number,
+    date: Date
   }]
 })
 
@@ -50,9 +52,10 @@ app.post("/api/exercise/add", (req, res)=>{
       date: new Date(date)
     }
     
-    UserModel.findByIdAndUpdate(req.body.userId,{"$set":{exercise:exercise}}, (err, updatedUser)=>{
+    UserModel.findByIdAndUpdate(req.body.userId,{$push:{exercise:exercise}}, (err, updatedUser)=>{
+      console.log(updatedUser)
           if(err) res.send("<b>something went wrong</b>");
-          UserModel.findById(updatedUser.id, (err, u)=>{console.log(u)});
+          UserModel.findById(updatedUser.id, (err, u)=>{console.log("tihs has run "+u)});
            res.json(updatedUser);
         })
     
