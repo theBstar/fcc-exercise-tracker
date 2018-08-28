@@ -53,10 +53,11 @@ app.post("/api/exercise/add", (req, res)=>{
     }
     
     UserModel.findByIdAndUpdate(req.body.userId,{$push:{exercise:exercise}}, (err, updatedUser)=>{
-      console.log(updatedUser)
           if(err) res.send("<b>something went wrong</b>");
-          UserModel.findById(updatedUser.id, (err, u)=>{console.log("tihs has run "+u)});
-           res.json(updatedUser);
+          UserModel.findById(updatedUser.id, (err, actullyUpdatedUser)=>{
+            console.log("tihs has run ok "+actullyUpdatedUser);
+           res.json(actullyUpdatedUser);
+          });
         })
     
   }else{
