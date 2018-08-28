@@ -60,7 +60,7 @@ app.post("/api/exercise/add", (req, res)=>{
                                                .map((d)=>{
                                                  console.log("this is the date "+d.date)
                                                  console.log("this is the returned date "+new Date(d.date))
-                                                 return new Date(d.date)})
+                                                 return {date: new Date(d.date),description: d.description, duration: d.duration }})
                                                 }
                                               );
             console.log(newU)
