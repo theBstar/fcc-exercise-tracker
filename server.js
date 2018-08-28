@@ -20,7 +20,9 @@ app.get('/', (req, res) => {
 // schemas
 const userSchema = mongoose.Schema({
   username: String,
-  exercise: Array
+  exercise: [{
+    
+  }]
 })
 
 const UserModel  = mongoose.model("person", userSchema);
@@ -49,7 +51,8 @@ app.post("/api/exercise/add", (req, res)=>{
     }
     
     UserModel.findByIdAndUpdate(req.body.userId,{"$set":{exercise:exercise}}, (err, updatedUser)=>{
-          if(err) res.send("<b>something went wrong</b>")
+          if(err) res.send("<b>something went wrong</b>");
+          UserModel.findById(updatedUser.id, (err, u)=>{console.log(u)});
            res.json(updatedUser);
         })
     
