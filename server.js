@@ -23,7 +23,7 @@ const userSchema = mongoose.Schema({
   exercise: [{
     description: String,
     duration: Number,
-    date: Date
+    date: Number
   }]
 })
 
@@ -75,21 +75,22 @@ app.get("/api/exercise/log", (req, res)=>{
   let limit  = req.query.limit || null
   if(to && from){
     if(limit){
-       UserModel.findById(req.query.userId).where("date").gt(from).lt("date").limit(limit).exec((err, data)=>{
+      console.log("everything provided");
+       UserModel.findById(req.query.userId).where("date").gt(from).lt(to).limit(limit).exec((err, data)=>{
          console.log("running")
          if(err) res.send("error");
          res.json(data); 
       })
     }else{
-      UserModel.findById(req.query.userId).where("date").gt(from).lt("date").exec((err, data)=>{
-        console.log("running")
+      console.log("limit not provided")
+      UserModel.findById(req.query.userId).where("exercise.date").gt(from).lt(to).exec((err, data)=>{
         if(err) res.send("error");
         res.json(data);
      }) 
     }
   }else{
+    console.log("only user id provided")
     UserModel.findById(req.query.userId, (err, data)=>{
-      console.log("running")
       if(err) res.send("error");
       res.json(data);
     })
