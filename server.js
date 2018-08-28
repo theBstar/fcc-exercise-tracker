@@ -51,9 +51,9 @@ app.post("/api/exercise/add", (req, res)=>{
       description: req.body.description,
       date: new Date(date)
     }
-    
-    UserModel.findByIdAndUpdate(req.body.userId,{$push:{exercise:exercise}}, (err, updatedUser)=>{
-          if(err) res.send("<b>something went wrong</b>");
+     
+    UserModel.findByIdAndUpdate(req.body.userId,{$push:{exercise:exercise}}, (err, updatedUser)=>{ //this will return the old data
+          if(err) res.send("<b>something went wrong</b>");                                        // to get updated array pass {new: true} to findAndUpdate
           UserModel.findById(updatedUser.id, (err, actullyUpdatedUser)=>{
             console.log("tihs has run ok "+actullyUpdatedUser);
            res.json(actullyUpdatedUser);
@@ -65,6 +65,16 @@ app.post("/api/exercise/add", (req, res)=>{
   }
   
 })
+
+// get the exercises
+app.get("/api/exercise/log", (req, res)=>{
+  if(req.query.userId) res.send("You must enter a userId")
+  let from = req.query.from || null
+  let to = req.query.to || null
+  let limit  = req.query.limit || null
+  UserModel.findById(req.query.userId).where(dat)
+})
+
 
 // Not found middleware
 app.use((req, res, next) => {
