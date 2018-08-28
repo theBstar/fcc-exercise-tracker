@@ -68,11 +68,16 @@ app.post("/api/exercise/add", (req, res)=>{
 
 // get the exercises
 app.get("/api/exercise/log", (req, res)=>{
-  if(req.query.userId) res.send("You must enter a userId")
+  console.log(req.query)
+  if(!req.query.userId) res.send("You must enter a userId")
   let from = req.query.from || null
   let to = req.query.to || null
   let limit  = req.query.limit || null
-  UserModel.findById(req.query.userId).where(dat)
+  UserModel.findById(req.query.userId).where("date">from && "date"<to).limit(limit).exec((err, data)=>{
+    console.log("running")
+   if(err) res.send("error");
+   res.json(data);
+  })
 })
 
 
