@@ -20,11 +20,7 @@ app.get('/', (req, res) => {
 // schemas
 const userSchema = mongoose.Schema({
   username: String,
-  exercise: [{
-    description: String,
-    duration: Number,
-    date: Date
-  }]
+  exercise: Array
 })
 
 const UserModel  = mongoose.model("person", userSchema);
@@ -47,20 +43,12 @@ app.post("/api/exercise/add", (req, res)=>{
     let exercise = {
       duration: req.body.duration,
       description: req.body.description,
-      date: date
+      date: new Date(date)
     }
-    UserModel.findById(req.body.userId, (err, user)=>{
-      if(!err){
-        user.exercise.push(exercise);
-        UserModel.save((err, updatedUser)=>{
-           console.log(updatedUser);
+    UserModel.findByIdAndUpdate(req.body.userId,{$set:{exercise:exercise}}, (err, updatedUser)=>{
           if(err) res.send("<b>something went wrong</b>")
            res.json(updatedUser);
         })
-      }else{
-        res.send("<UserId is not be found>");
-      }
-    })
   }else{
     res.send("<b>UserId, duration and description cannot be empty</b>")
   }
