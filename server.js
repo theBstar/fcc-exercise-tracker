@@ -73,11 +73,27 @@ app.get("/api/exercise/log", (req, res)=>{
   let from = req.query.from || null
   let to = req.query.to || null
   let limit  = req.query.limit || null
-  UserModel.findById(req.query.userId).where("date">from && "date"<to).limit(limit).exec((err, data)=>{
-    console.log("running")
-   if(err) res.send("error");
-   res.json(data);
-  })
+  if(to && from){
+    if(limit){
+       UserModel.findById(req.query.userId).where("date").gt(from).lt("date").limit(limit).exec((err, data)=>{
+         console.log("running")
+         if(err) res.send("error");
+         res.json(data); 
+      })
+    }else{
+      UserModel.findById(req.query.userId).where("date").gt(from).lt("date").exec((err, data)=>{
+        console.log("running")
+        if(err) res.send("error");
+        res.json(data);
+     }) 
+    }
+  }else{
+    UserModel.findById(req.query.userId, (err, data)=>{
+      console.log("running")
+      if(err) res.send("error");
+      res.json(data);
+    })
+  }
 })
 
 
