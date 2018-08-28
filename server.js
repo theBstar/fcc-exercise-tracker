@@ -81,28 +81,61 @@ app.post("/api/exercise/add", (req, res)=>{
 app.get("/api/exercise/log", (req, res)=>{
   console.log(req.query)
   if(!req.query.userId) res.send("You must enter a userId")
-  let from = new Date(req.query.from).getTime || null
-  let to = newDate(req.query.to || null
+  let from = new Date(req.query.from).getTime() || null
+  let to = new Date(req.query.to).getTime() || null
   let limit  = req.query.limit || null
   if(to && from){
     if(limit){
       console.log("everything provided");
        UserModel.findById(req.query.userId).where("date").gt(from).lt(to).limit(limit).exec((err, data)=>{
          if(err) res.send("error");
-         res.json(data); 
+         const newU = Object.assign({username: data.username,
+                                        userId: data.id,
+                                        exercise: data
+                                               .exercise
+                                               .map((d)=>{
+                                                 let retVal= {date: (new Date(d.date)), description: d.description, duration: d.duration }
+                                                 console.log(retVal)
+                                                 return retVal;
+                                                 })
+                                                }
+                                              );
+         res.json(newU); 
       })
     }else{
       console.log("limit not provided")
       UserModel.findById(req.query.userId).where("exercise.date").gt(from).lt(to).exec((err, data)=>{
         if(err) res.send("error");
-        res.json(data);
+        const newU = Object.assign({username: data.username,
+                                        userId: data.id,
+                                        exercise: data
+                                               .exercise
+                                               .map((d)=>{
+                                                 let retVal= {date: (new Date(d.date)), description: d.description, duration: d.duration }
+                                                 console.log(retVal)
+                                                 return retVal;
+                                                 })
+                                                }
+                                              );
+        res.json(newU);
      }) 
     }
   }else{
     console.log("only user id provided")
     UserModel.findById(req.query.userId, (err, data)=>{
       if(err) res.send("error");
-      res.json(data);
+      const newU = Object.assign({username: data.username,
+                                        userId: data.id,
+                                        exercise: data
+                                               .exercise
+                                               .map((d)=>{
+                                                 let retVal= {date: (new Date(d.date)), description: d.description, duration: d.duration }
+                                                 console.log(retVal)
+                                                 return retVal;
+                                                 })
+                                                }
+                                              );
+      res.json(newU);
     })
   }
 })
