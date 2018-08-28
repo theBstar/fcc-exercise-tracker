@@ -38,20 +38,25 @@ app.post("/api/exercise/new-user", (req, res)=>{
 });
 
 app.post("/api/exercise/add", (req, res)=>{
+  
   if(req.body.userId && req.body.duration && req.body.description){
-    let date = validator.isISO8601(req.body.date)? req.body.date: 0;
+    
+    let date = validator.isISO8601(req.body.date)? req.body.date: "0";
     let exercise = {
       duration: req.body.duration,
       description: req.body.description,
       date: new Date(date)
     }
-    UserModel.findByIdAndUpdate(req.body.userId,{$set:{exercise:exercise}}, (err, updatedUser)=>{
+    
+    UserModel.findByIdAndUpdate(req.body.userId,{"$set":{exercise:exercise}}, (err, updatedUser)=>{
           if(err) res.send("<b>something went wrong</b>")
            res.json(updatedUser);
         })
+    
   }else{
     res.send("<b>UserId, duration and description cannot be empty</b>")
   }
+  
 })
 
 // Not found middleware
