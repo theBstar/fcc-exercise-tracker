@@ -58,9 +58,8 @@ app.post("/api/exercise/add", (req, res)=>{
             const newU = Object.assign(actullyUpdatedUser, { exercise: actullyUpdatedUser
                                                .exercise
                                                .map((d)=>{
-                                                 console.log("this is the date "+d.date)
-                                                 console.log("this is the returned date "+new Date(d.date))
-                                                 return {date: new Date(d.date),description: d.description, duration: d.duration }})
+                                                 return {date: (new Date(d.date)),description: d.description, duration: d.duration }
+                                                 })
                                                 }
                                               );
             console.log(newU)
