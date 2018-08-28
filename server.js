@@ -17,75 +17,29 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 // schemas
-const exerciseSchema = mongoose.Schema({
-  description: String,
-  duration: Number,
-  date: Date
-})
-
-const newUserSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
   username: String,
   exercise: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "exerciseSchema"
+    description: String,
+    duration: Number,
+    date: Date
   }]
+})
+
+const UserModel  = mongoose.model("person", userSchema);
+
+app.post("/api/exercise/new-user", (req, res)=>{
+  let result;
+  if(!req.username){
+    res.send("error , try again!");   
+  };
+  UserModel.create({username: req.username}, (err, user)=>{
+    if(err){
+      res.send("something went wrong");
+    }
+    res.json({username: user.username, userId: user.id});
+  })
 });
-
-const newExercise = mongoose.model("exercise", exerciseSchema)
-const newUserModel = mongoose.model("newUserRecord", newUserSchema);
-
-
-app.post("/api/exercise/add", function(req, res){
-  let exercise = {
-                description: req.body.description, 
-                duration: req.body.duration, 
-                date: req.body.date
-              };
-  if(req.body.userId){
-    console.log("userId is not null");
-    newUserModel.findById(req.body.userId, function(err, user){
-      if(!err){
-        const toBeSavedExercise = new newExercise(exercise)
-        toBeSavedExercise.save((err, savedExercise)=>{
-            if(!err) {
-              console.log("exercise is saved "+savedExercise);
-              console.log("here the user is "+user);
-              newUserModel.findByIdAndUpdate(user.id, {$set:{exercise: [savedExercise.id]}},(err, updatedUser)=>{
-                  if(!err){
-                    console.log("everyhting done")
-                    res.json(updatedUser);
-                  }else{
-                    res.send("<b>error!</b>");
-                  }    
-              })
-            }else{
-              res.send("<b>error!</b>")
-            }
-          })
-      }else{
-        res.send("<h1>Error has occurred</h1>")
-      }
-    })
-  }
-})
-app.post("/api/exercise/new-user", function(req, res){
-  if(req.body.username){
-    newUserModel.findOne({username: req.body.username}, (err, data)=>{
-      if(!data){
-        newUserModel.create({username: req.body.username}, (err, data)=>{
-          if(data){
-            res.json({username: data.username, userId: data.id})
-          }
-        })
-      }else{
-        res.json({username: data.username, userId: data.id})
-      }
-    })
-  }else{
-    res.send("error! try again with non-empty username")
-  }
-})
-
 
 // Not found middleware
 app.use((req, res, next) => {
