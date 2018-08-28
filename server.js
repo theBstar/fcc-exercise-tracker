@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const validator = require("validator")
 
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MLAB_URI)
@@ -42,7 +43,19 @@ app.post("/api/exercise/new-user", (req, res)=>{
 });
 
 app.post("/api/exercise/add", (req, res)=>{
-  
+  if(req.userId && req.duration && req.description){
+    let date = validator.isISO8601(req.date)? req.date: 0;
+    let exercise = {
+      duration: req.duration,
+      description: req.description,
+      date: date
+    }
+    UserModel.findById(req.userId, (err, user)=>{
+      if(!err){
+        user.exercise.push(exercise);
+      }
+    })
+  }
 })
 
 // Not found middleware
