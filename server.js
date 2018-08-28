@@ -30,11 +30,10 @@ const userSchema = mongoose.Schema({
 const UserModel  = mongoose.model("person", userSchema);
 
 app.post("/api/exercise/new-user", (req, res)=>{
-  let result;
-  if(!req.userId){
+  if(!req.body.username){
     res.send("error , try again!");   
   };
-  UserModel.create({username: req.userId}, (err, user)=>{
+  UserModel.create({username: req.body.username}, (err, user)=>{
     if(err){
       res.send("something went wrong");
     }
@@ -43,18 +42,27 @@ app.post("/api/exercise/new-user", (req, res)=>{
 });
 
 app.post("/api/exercise/add", (req, res)=>{
-  if(req.userId && req.duration && req.description){
-    let date = validator.isISO8601(req.date)? req.date: 0;
+  if(req.body.userId && req.body.duration && req.body.description){
+    let date = validator.isISO8601(req.body.date)? req.body.date: 0;
     let exercise = {
-      duration: req.duration,
-      description: req.description,
+      duration: req.body.duration,
+      description: req.body.description,
       date: date
     }
-    UserModel.findById(req.userId, (err, user)=>{
+    UserModel.findById(req.body.userId, (err, user)=>{
       if(!err){
         user.exercise.push(exercise);
+        UserModel.save((err, updatedUser)=>{
+           console.log(updatedUser);
+          if(err) res.send("<b>something went wrong</b>")
+           res.json(updatedUser);
+        })
+      }else{
+        res.send("<UserId is not be found>");
       }
     })
+  }else{
+    res.send("<b>UserId, duration and description cannot be empty</b>")
   }
 })
 
