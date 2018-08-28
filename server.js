@@ -49,14 +49,20 @@ app.post("/api/exercise/add", (req, res)=>{
     let exercise = {
       duration: req.body.duration,
       description: req.body.description,
-      date: new Date(date)
+      date: new Date(date).getTime()
     }
      
     UserModel.findByIdAndUpdate(req.body.userId,{$push:{exercise:exercise}}, (err, updatedUser)=>{ //this will return the old data
           if(err) res.send("<b>something went wrong</b>");                                        // to get updated array pass {new: true} to findAndUpdate
           UserModel.findById(updatedUser.id, (err, actullyUpdatedUser)=>{
             console.log("tihs has run ok "+actullyUpdatedUser);
-           res.json(actullyUpdatedUser);
+            const newU = Object.assign(actullyUpdatedUser, { exercise: actullyUpdatedUser
+                                               .exercise.filter((el)=>{return el.date})
+                                               .map((d)=>{return new Date(d)})
+                                                }
+                                              );
+            console.log(newU)
+           res.json(newU);
           });
         })
     
